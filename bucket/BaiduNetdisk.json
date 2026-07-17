@@ -1,0 +1,108 @@
+{
+    "version": "8.6.0.102",
+    "description": "百度网盘 PC 版",
+    "homepage": "https://pan.baidu.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pan.baidu.com/disk/duty/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_8.6.0.102.exe#/dl.7z",
+            "hash": "537e1f09f13758a9714df077068ebe79266d804afe1163d649eeb5cd40fe3b8f"
+        }
+    },
+    "installer": {
+        "script": [
+            "$persistRoot = \"$persist_dir\\BaiduNetdisk\"",
+            "if (!(Test-Path $persistRoot)) { New-Item $persistRoot -Type Directory -Force | Out-Null }",
+            "# persist install dir: users",
+            "$persistUsers = \"$persistRoot\\users\"",
+            "if (Test-Path $persistUsers) {",
+            "    Remove-Item \"$dir\\users\" -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path \"$dir\\users\" -Target $persistUsers | Out-Null",
+            "} else {",
+            "    if (Test-Path \"$dir\\users\") {",
+            "        Move-Item \"$dir\\users\" $persistUsers -Force",
+            "        New-Item -Type Junction -Path \"$dir\\users\" -Target $persistUsers | Out-Null",
+            "    }",
+            "}",
+            "# persist AppData",
+            "$runtimeGuanjia = \"$env:APPDATA\\BaiduYunGuanjia\"",
+            "$persistGuanjia = \"$persistRoot\\guanjia\"",
+            "if (Test-Path $persistGuanjia) {",
+            "    Remove-Item $runtimeGuanjia -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeGuanjia -Target $persistGuanjia | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeGuanjia) {",
+            "        Move-Item $runtimeGuanjia $persistGuanjia -Force",
+            "        New-Item -Type Junction -Path $runtimeGuanjia -Target $persistGuanjia | Out-Null",
+            "    }",
+            "}",
+            "$runtimeKernel = \"$env:APPDATA\\BaiduYunKernel\"",
+            "$persistKernel = \"$persistRoot\\kernel\"",
+            "if (Test-Path $persistKernel) {",
+            "    Remove-Item $runtimeKernel -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeKernel -Target $persistKernel | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeKernel) {",
+            "        Move-Item $runtimeKernel $persistKernel -Force",
+            "        New-Item -Type Junction -Path $runtimeKernel -Target $persistKernel | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$persistRoot = \"$persist_dir\\BaiduNetdisk\"",
+            "# users",
+            "$persistUsers = \"$persistRoot\\users\"",
+            "if (!(Test-Path $persistUsers)) {",
+            "    Move-Item \"$dir\\users\" $persistUsers -Force -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Remove-Item \"$dir\\users\" -Force -Recurse -ErrorAction SilentlyContinue",
+            "}",
+            "# guanjia",
+            "$runtimeGuanjia = \"$env:APPDATA\\BaiduYunGuanjia\"",
+            "$persistGuanjia = \"$persistRoot\\guanjia\"",
+            "if (!(Test-Path $persistGuanjia)) {",
+            "    Move-Item $runtimeGuanjia $persistGuanjia -Force -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Remove-Item $runtimeGuanjia -Force -Recurse -ErrorAction SilentlyContinue",
+            "}",
+            "# kernel",
+            "$runtimeKernel = \"$env:APPDATA\\BaiduYunKernel\"",
+            "$persistKernel = \"$persistRoot\\kernel\"",
+            "if (!(Test-Path $persistKernel)) {",
+            "    Move-Item $runtimeKernel $persistKernel -Force -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Remove-Item $runtimeKernel -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "BaiduNetdisk.exe",
+            "百度网盘"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
+        "Remove-Item \"$dir\\`$TEMP\" -Recurse"
+    ],
+    "pre_uninstall": [
+        "if (Get-Process -Name YunDetectService -ErrorAction SilentlyContinue) { Stop-Process -Name YunDetectService -Force }"
+    ],
+    "checkver": {
+        "url": "https://pan.baidu.com/disk/cmsdata?do=client",
+        "jsonpath": "$.guanjia.url",
+        "regex": "BaiduNetdisk_([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#/dl.7z"
+            }
+        }
+    }
+}

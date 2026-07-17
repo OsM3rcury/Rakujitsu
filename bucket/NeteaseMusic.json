@@ -19,23 +19,31 @@
     "installer": {
         "script": [
             "Get-ChildItem \"$dir\\redist_packages\" | Move-Item -Destination \"$dir\" -Force",
-            "$persistAppdata = \"$persist_dir\\appdata\"",
+            "$persistRoot = \"$persist_dir\\NeteaseMusic\"",
+            "if (!(Test-Path $persistRoot)) { New-Item $persistRoot -Type Directory -Force | Out-Null }",
             "$runtimeAppdata = \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
-            "if (!(Test-Path $persistAppdata)) { New-Item $persistAppdata -Type Directory -Force | Out-Null }",
-            "if (Test-Path $runtimeAppdata) {",
-            "    if ((Get-Item $runtimeAppdata -Force).LinkType -ne 'Junction') {",
-            "        Copy-Item $runtimeAppdata $persistAppdata -Recurse -Force -ErrorAction SilentlyContinue",
-            "        Remove-Item $runtimeAppdata -Recurse -Force",
+            "$runtimePersist = \"$persistRoot\\appdata\"",
+            "if (Test-Path $runtimePersist) {",
+            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeAppdata) {",
+            "        Move-Item $runtimeAppdata $runtimePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
             "    }",
-            "}",
-            "if (!(Test-Path $runtimeAppdata)) { New-Item -Type Junction -Path $runtimeAppdata -Target $persistAppdata | Out-Null }"
+            "}"
         ]
     },
     "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\redist_packages\" -Force -Recurse",
     "uninstaller": {
         "script": [
             "$runtimeAppdata = \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
-            "if ((Get-Item $runtimeAppdata -Force).LinkType -eq 'Junction') { Remove-Item $runtimeAppdata -Force }"
+            "$runtimePersist = \"$persist_dir\\NeteaseMusic\\appdata\"",
+            "if (!(Test-Path $runtimePersist)) {",
+            "    Move-Item $runtimeAppdata $runtimePersist -Force -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
         ]
     },
     "bin": "cloudmusic.exe",

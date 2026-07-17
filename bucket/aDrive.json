@@ -16,7 +16,7 @@
         "script": [
             "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -Type Directory -Force | Out-Null }",
             "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
-            "$runtimePersist = \"$persist_dir\\appdata\"",
+            "$runtimePersist = \"$persist_dir\\aDrive\\appdata\"",
             "if (Test-Path $runtimePersist) {",
             "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
             "    New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
@@ -31,7 +31,7 @@
     "uninstaller": {
         "script": [
             "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
-            "$runtimePersist = \"$persist_dir\\appdata\"",
+            "$runtimePersist = \"$persist_dir\\aDrive\\appdata\"",
             "if (!(Test-Path $runtimePersist)) {",
             "    Move-Item $runtimeAppdata $runtimePersist -Force",
             "} else {",
