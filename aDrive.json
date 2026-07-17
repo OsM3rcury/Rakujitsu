@@ -1,0 +1,54 @@
+{
+    "homepage": "https://www.alipan.com/",
+    "description": "阿里云盘桌面客户端 - 备份无忧 整理有序",
+    "version": "6.9.1",
+    "license": {
+        "identifier": "EULA"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-6.9.1.exe",
+            "hash": "cc40289de6c35821214c816b8a1101c3ada822f05c7da3b770ae432067eea76a"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "$persistAppdata = \"$persist_dir\\appdata\"",
+            "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
+            "if (!(Test-Path $persistAppdata)) { New-Item $persistAppdata -Type Directory -Force | Out-Null }",
+            "if (Test-Path $runtimeAppdata) {",
+            "    if ((Get-Item $runtimeAppdata -Force).LinkType -ne 'Junction') {",
+            "        Copy-Item $runtimeAppdata $persistAppdata -Recurse -Force -ErrorAction SilentlyContinue",
+            "        Remove-Item $runtimeAppdata -Recurse -Force",
+            "    }",
+            "}",
+            "if (!(Test-Path $runtimeAppdata)) { New-Item -Type Junction -Path $runtimeAppdata -Target $persistAppdata | Out-Null }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
+            "if ((Get-Item $runtimeAppdata -Force).LinkType -eq 'Junction') { Remove-Item $runtimeAppdata -Force }"
+        ]
+    },
+    "bin": "aDrive.exe",
+    "shortcuts": [
+        [
+            "aDrive.exe",
+            "阿里云盘"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.aliyundrive.com/desktop/version/update.json",
+        "jsonpath": "$.url",
+        "regex": "aliyun-drive-desktop-version/([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-$version.exe"
+            }
+        }
+    }
+}
