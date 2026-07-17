@@ -14,22 +14,29 @@
     "innosetup": true,
     "installer": {
         "script": [
-            "$persistAppdata = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -Type Directory -Force | Out-Null }",
             "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
-            "if (!(Test-Path $persistAppdata)) { New-Item $persistAppdata -Type Directory -Force | Out-Null }",
-            "if (Test-Path $runtimeAppdata) {",
-            "    if ((Get-Item $runtimeAppdata -Force).LinkType -ne 'Junction') {",
-            "        Copy-Item $runtimeAppdata $persistAppdata -Recurse -Force -ErrorAction SilentlyContinue",
-            "        Remove-Item $runtimeAppdata -Recurse -Force",
+            "$runtimePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimePersist) {",
+            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeAppdata) {",
+            "        Move-Item $runtimeAppdata $runtimePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
             "    }",
-            "}",
-            "if (!(Test-Path $runtimeAppdata)) { New-Item -Type Junction -Path $runtimeAppdata -Target $persistAppdata | Out-Null }"
+            "}"
         ]
     },
     "uninstaller": {
         "script": [
             "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
-            "if ((Get-Item $runtimeAppdata -Force).LinkType -eq 'Junction') { Remove-Item $runtimeAppdata -Force }"
+            "$runtimePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimePersist)) {",
+            "    Move-Item $runtimeAppdata $runtimePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
         ]
     },
     "bin": "aDrive.exe",
