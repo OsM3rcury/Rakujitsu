@@ -1,0 +1,38 @@
+{
+    "version": "1.0.0.44",
+    "description": "马维斯 - 腾讯出品的桌面智能助手",
+    "homepage": "https://marvis.qq.com/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://marvis.qq.com/download/exe",
+            "hash": "E57694CA6EB2DF00506337F3DB6C73817544E6E3ADEB8184FBB4C62A5B6B1080"
+        }
+    },
+    "installer": {
+        "script": [
+            "$installer = Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1",
+            "Start-Process -FilePath $installer.FullName -ArgumentList \"/S /D=$dir\" -Wait"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Marvis.exe",
+            "Marvis"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$redirectUrl = curl.exe -sI -o NUL -w '%{redirect_url}' \"https://marvis.qq.com/download/exe\"",
+            "$version = [regex]::Match($redirectUrl, 'marvis_\\d+_([\\d.]+)_').Groups[1].Value",
+            "Write-Output $version"
+        ]
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://marvis.qq.com/download/exe"
+            }
+        }
+    }
+}

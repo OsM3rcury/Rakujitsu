@@ -1,0 +1,69 @@
+{
+    "version": "1.4.3.1",
+    "description": "Oopz 游戏语音社交平台 - AI降噪、高清语音、屏幕共享",
+    "homepage": "https://oopz.cn/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://help.oopz.cn/agreement/service"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://downloadcdn.oopz.cn/release/143/oopz_setup_v1.4.3.1.exe#/dl.7z",
+            "hash": "48F65ACFEC57B039059AB53099AA808826D6BAB60EC762A01A8C0D6014B5754B"
+        }
+    },
+    "installer": {
+        "script": [
+            "$persistRoot = \"$persist_dir\\Oopz\"",
+            "if (!(Test-Path $persistRoot)) { New-Item $persistRoot -Type Directory -Force | Out-Null }",
+            "# persist AppData",
+            "$runtimeData = \"$env:APPDATA\\Oopz\"",
+            "$persistData = \"$persistRoot\\appdata\"",
+            "if (Test-Path $persistData) {",
+            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeData -Target $persistData | Out-Null",
+            "} else {",
+            "    # AppData is created by the app on first run, not during install",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$persistRoot = \"$persist_dir\\Oopz\"",
+            "$runtimeData = \"$env:APPDATA\\Oopz\"",
+            "$persistData = \"$persistRoot\\appdata\"",
+            "if (!(Test-Path $persistData)) {",
+            "    if (Test-Path $runtimeData) {",
+            "        Move-Item $runtimeData $persistData -Force -ErrorAction SilentlyContinue",
+            "    }",
+            "} else {",
+            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "oopz.exe",
+            "Oopz"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\`$TEMP\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "script": [
+            "$redirectUrl = (curl.exe -sI -o NUL -w '%{redirect_url}' 'https://www.oopz.cn/download/xx')",
+            "if ($redirectUrl -match 'v([\\d.]+)\\.exe') {",
+            "    Write-Output $matches[1]",
+            "}"
+        ]
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.oopz.cn/download/xx#/dl.7z"
+            }
+        }
+    }
+}
