@@ -4,7 +4,7 @@
     "homepage": "https://www.kookapp.cn/",
     "license": "Proprietary",
     "url": "https://dl.kookapp.cn/assets/release/html_pc/kook_3011/Kook_PC_Setup_v0.108.13.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe#/dl.7z",
-    "hash": "30CD55C88C6C7DC5FA8F35CCD662C84A58856FA990132BD81450D61D5B17D8F",
+    "hash": "30CD55C88C6C7DC5FA8F338CCD662C84A58856FA990132BD81450D61D5B17D8F",
     "installer": {
         "script": [
             "Expand-7zipArchive -Path \"$dir\\`$1\\SquirrelTemp\\app.7z\" -Destination \"$dir\" -Removal",

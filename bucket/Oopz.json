@@ -53,16 +53,16 @@
     ],
     "checkver": {
         "script": [
-            "$redirectUrl = (curl.exe -sI -o NUL -w '%{redirect_url}' 'https://www.oopz.cn/download/xx')",
-            "if ($redirectUrl -match 'v([\\d.]+)\\.exe') {",
-            "    Write-Output $matches[1]",
-            "}"
-        ]
+            "$resp = Invoke-WebRequest -Uri 'https://www.oopz.cn/download/xx' -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue",
+            "$resp.Headers['Location']"
+        ],
+        "regex": "/([\\d]+)/oopz_([\\w]+)_v([\\d\\.]+)\\.exe",
+        "replace": "$3"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://www.oopz.cn/download/xx#/dl.7z"
+                "url": "https://downloadcdn.oopz.cn/release/$match1/oopz_$match2_v$match3.exe#/dl.7z"
             }
         }
     }

@@ -23,10 +23,10 @@
     ],
     "checkver": {
         "script": [
-            "$redirectUrl = curl.exe -sI -o NUL -w '%{redirect_url}' \"https://marvis.qq.com/download/exe\"",
-            "$version = [regex]::Match($redirectUrl, 'marvis_\\d+_([\\d.]+)_').Groups[1].Value",
-            "Write-Output $version"
-        ]
+            "$resp = Invoke-WebRequest -Uri 'https://marvis.qq.com/download/exe' -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue",
+            "$resp.Headers['Location']"
+        ],
+        "regex": "marvis_\\d+_([\\d.]+)_"
     },
     "autoupdate": {
         "architecture": {
