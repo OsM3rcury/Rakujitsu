@@ -53,8 +53,11 @@
     ],
     "checkver": {
         "script": [
-            "$resp = Invoke-WebRequest -Uri 'https://www.oopz.cn/download/xx' -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue",
-            "$resp.Headers['Location']"
+            "$req = [System.Net.WebRequest]::Create('https://www.oopz.cn/download/xx')",
+            "$req.AllowAutoRedirect = $false",
+            "$resp = $req.GetResponse()",
+            "$resp.Headers['Location']",
+            "$resp.Close()"
         ],
         "regex": "/([\\d]+)/oopz_([\\w]+)_v([\\d\\.]+)\\.exe",
         "replace": "$3"

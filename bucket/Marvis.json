@@ -23,8 +23,11 @@
     ],
     "checkver": {
         "script": [
-            "$resp = Invoke-WebRequest -Uri 'https://marvis.qq.com/download/exe' -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue",
-            "$resp.Headers['Location']"
+            "$req = [System.Net.WebRequest]::Create('https://marvis.qq.com/download/exe')",
+            "$req.AllowAutoRedirect = $false",
+            "$resp = $req.GetResponse()",
+            "$resp.Headers['Location']",
+            "$resp.Close()"
         ],
         "regex": "marvis_\\d+_([\\d.]+)_"
     },

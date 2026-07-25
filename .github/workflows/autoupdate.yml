@@ -9,18 +9,23 @@ jobs:
   autoupdate:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Scoop
         run: |
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
           irm get.scoop.sh | iex
 
-      - name: Run autoupdate
+      - name: Run checkver
         run: |
           . "$env:USERPROFILE\scoop\apps\scoop\current\bin\scoop.ps1"
           scoop bucket add rakujitsu $env:GITHUB_WORKSPACE
-          scoop update
-          pwsh "$env:SCOOP\apps\scoop\current\bin\auto-update.ps1" -Dir "$env:GITHUB_WORKSPACE" -Push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          . "$env:SCOOP\apps\scoop\current\bin\checkver.ps1" -Dir "$env:GITHUB_WORKSPACE\bucket" -Update
+
+      - name: Commit and push
+        run: |
+          cd $env:GITHUB_WORKSPACE
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add bucket/
+          git diff --staged --quiet || (git commit -m "autoupdate: bump versions" && git push)
