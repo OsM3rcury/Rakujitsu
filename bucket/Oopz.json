@@ -3,16 +3,19 @@
     "description": "Oopz - 好玩的语音，更有趣的社区",
     "homepage": "https://www.oopz.cn/",
     "license": "Proprietary",
-    "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe#/dl.7z",
+    "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe",
     "hash": "495574324f61f52d5b6b1979946808778f6580f839846061329c36294a50e501",
     "pre_install": [
-        "# 1. 进入 NSIS 内部提取真正的程序包",
-        "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
-        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-        "} elseif (Test-Path \"$dir\\`$PLUGINSDIR\\app.7z\") {",
-        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app.7z\" \"$dir\"",
+        "$exe_file = \"$dir\\Oopz-$version.exe\"",
+        "if (Test-Path $exe_file) {",
+        "    & 7z.exe x \"$exe_file\" \"-o$dir\" \"-y\" | Out-Null",
+        "    Remove-Item $exe_file -Force",
         "}",
-        "# 2. 清理所有 NSIS 残留的外壳文件",
+        "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
+        "    & 7z.exe x \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"-o$dir\" \"-y\" | Out-Null",
+        "} elseif (Test-Path \"$dir\\`$PLUGINSDIR\\app.7z\") {",
+        "    & 7z.exe x \"$dir\\`$PLUGINSDIR\\app.7z\" \"-o$dir\" \"-y\" | Out-Null",
+        "}",
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse -ErrorAction SilentlyContinue"
     ],
     "bin": "Oopz.exe",
@@ -29,15 +32,10 @@
         "if (!(Test-Path $persist_data)) { New-Item $persist_data -ItemType Directory -Force | Out-Null }",
         "if (Test-Path $appdata) {",
         "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
-        "        # 如果原本已有非链接的数据文件夹，迁移它",
         "        Move-Item \"$appdata\\*\" $persist_data -Force -ErrorAction SilentlyContinue",
         "        Remove-Item $appdata -Force -Recurse",
-        "    } else {",
-        "        # 如果已经是链接，先删掉旧链接准备重新指向",
-        "        Remove-Item $appdata -Force",
-        "    }",
+        "    } else { Remove-Item $appdata -Force }",
         "}",
-        "# 创建软链接，将 AppData 指向 Scoop 的 persist 目录",
         "New-Item -ItemType Junction -Path $appdata -Target $persist_data | Out-Null"
     ],
     "uninstaller": {
@@ -45,9 +43,7 @@
             "$appdata = \"$env:AppData\\Oopz\"",
             "if (Test-Path $appdata) {",
             "    $item = Get-Item $appdata",
-            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
-            "        Remove-Item $appdata -Force",
-            "    }",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
             "}"
         ]
     },
@@ -56,6 +52,6 @@
         "regex": "releases/([\\d.]+)/Oopz-[\\d.]+.exe"
     },
     "autoupdate": {
-        "url": "https://guanyu-static.oopz.cn/oopz-client/releases/$version/Oopz-$version.exe#/dl.7z"
+        "url": "https://guanyu-static.oopz.cn/oopz-client/releases/$version/Oopz-$version.exe"
     }
 }
