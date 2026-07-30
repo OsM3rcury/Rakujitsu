@@ -6,7 +6,9 @@
     "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe#/dl.7z",
     "hash": "495574324f61f52d5b6b1979946808778f6580f839846061329c36294a50e501",
     "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
+        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "}",
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
     ],
     "bin": "Oopz.exe",
@@ -16,17 +18,17 @@
             "Oopz"
         ]
     ],
-    "persist": "userdata",
+    "persist": [],
     "post_install": [
         "$appdata = \"$env:AppData\\Oopz\"",
-        "if (!(Test-Path \"$persist_dir\\userdata\")) { New-Item \"$persist_dir\\userdata\" -ItemType Directory -Force | Out-Null }",
+        "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
         "if (Test-Path $appdata) {",
         "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
-        "        Move-Item \"$appdata\\*\" \"$persist_dir\\userdata\" -Force -ErrorAction SilentlyContinue",
+        "        Move-Item \"$appdata\\*\" $persist_dir -Force -ErrorAction SilentlyContinue",
         "        Remove-Item $appdata -Force -Recurse",
         "    } else { Remove-Item $appdata -Force }",
         "}",
-        "New-Item -ItemType Junction -Path $appdata -Target \"$persist_dir\\userdata\" | Out-Null"
+        "New-Item -ItemType Junction -Path $appdata -Target $persist_dir | Out-Null"
     ],
     "uninstaller": {
         "script": [

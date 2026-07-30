@@ -13,22 +13,28 @@
         }
     },
     "innosetup": true,
-    "installer": {
+    "persist": [],
+    "post_install": [
+        "Move-Item \"$dir\\{code_GetAppExeDestName}\" \"$dir\\quark.exe\" -Force",
+        "Move-Item \"$dir\\{code_GetAppProxyExeDestName}\" \"$dir\\quark_proxy.exe\" -Force",
+        "$target = \"$env:LOCALAPPDATA\\Quark\"",
+        "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $target) {",
+        "    if (-not (Get-Item $target).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+        "        Move-Item \"$target\\*\" $persist_dir -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item $target -Force -Recurse",
+        "    } else { Remove-Item $target -Force }",
+        "}",
+        "New-Item -ItemType Junction -Path $target -Target $persist_dir | Out-Null",
+        "$updateExe = \"$dir\\QuarkUpdate.exe\"",
+        "if (!(Test-Path $updateExe)) { New-Item -ItemType Directory -Path $updateExe -Force | Out-Null }"
+    ],
+    "uninstaller": {
         "script": [
-            "Move-Item \"$dir\\{code_GetAppExeDestName}\" \"$dir\\quark.exe\" -Force",
-            "Move-Item \"$dir\\{code_GetAppProxyExeDestName}\" \"$dir\\quark_proxy.exe\" -Force",
             "$target = \"$env:LOCALAPPDATA\\Quark\"",
-            "$persistTarget = \"$persist_dir\\LocalAppData\"",
-            "if (Test-Path $persistTarget) {",
-            "    New-Item -ItemType Junction -Path $target -Target $persistTarget -Force | Out-Null",
-            "} else {",
-            "    if (Test-Path $target) {",
-            "        Move-Item $target $persistTarget -Force",
-            "        New-Item -ItemType Junction -Path $target -Target $persistTarget -Force | Out-Null",
-            "    } else {",
-            "        New-Item -ItemType Directory -Path $persistTarget -Force | Out-Null",
-            "        New-Item -ItemType Junction -Path $target -Target $persistTarget -Force | Out-Null",
-            "    }",
+            "if (Test-Path $target) {",
+            "    $item = Get-Item $target",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $target -Force }",
             "}"
         ]
     },

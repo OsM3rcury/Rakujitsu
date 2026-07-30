@@ -5,34 +5,33 @@
     "license": "Proprietary",
     "url": "https://dl.kookapp.cn/assets/release/html_pc/kook_3037/Kook_PC_Setup_v0.109.0.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe?auth_key=1785427639-4715819a865a19294f6d0887ad8c59c0-13lm0mtz0-4bb20964a539597b1684912656ad5048#/dl.7z",
     "hash": "1cc9d34efb23327752f7b55c3b47c89473ff80bfcaba265661dfa841517e0ebb",
-    "installer": {
-        "script": [
-            "Expand-7zipArchive -Path \"$dir\\`$1\\SquirrelTemp\\app.7z\" -Destination \"$dir\" -Removal",
-            "Expand-7zipArchive -Path \"$dir\\KOOK-*-full.nupkg\" -ExtractDir \"lib\\net45\" -Removal",
-            "@('$PLUGINSDIR', '$1') | ForEach-Object {",
-            "    Remove-Item \"$dir\\$_\" -Recurse -Force",
-            "}",
-            "# persist AppData",
-            "$runtimeData = \"$env:APPDATA\\KOOK\"",
-            "$persistData = \"$persist_dir\\appdata\"",
-            "if (Test-Path $persistData) {",
-            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
-            "    New-Item -Type Junction -Path $runtimeData -Target $persistData | Out-Null",
-            "} else {",
-            "    # AppData is created by the app on first run",
-            "}"
-        ]
-    },
+    "pre_install": [
+        "if (Test-Path \"$dir\\`$1\\SquirrelTemp\\app.7z\") {",
+        "    Expand-7zipArchive \"$dir\\`$1\\SquirrelTemp\\app.7z\" \"$dir\" -Removal",
+        "}",
+        "Get-ChildItem \"$dir\\KOOK-*-full.nupkg\" | ForEach-Object {",
+        "    Expand-7zipArchive $_.FullName -ExtractDir \"lib\\net45\" -Removal",
+        "}",
+        "Remove-Item \"$dir\\`$1\", \"$dir\\`$PLUGINSDIR\" -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": [],
+    "post_install": [
+        "$appdata = \"$env:APPDATA\\KOOK\"",
+        "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $appdata) {",
+        "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+        "        Move-Item \"$appdata\\*\" $persist_dir -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item $appdata -Force -Recurse",
+        "    } else { Remove-Item $appdata -Force }",
+        "}",
+        "New-Item -ItemType Junction -Path $appdata -Target $persist_dir | Out-Null"
+    ],
     "uninstaller": {
         "script": [
-            "$runtimeData = \"$env:APPDATA\\KOOK\"",
-            "$persistData = \"$persist_dir\\appdata\"",
-            "if (!(Test-Path $persistData)) {",
-            "    if (Test-Path $runtimeData) {",
-            "        Move-Item $runtimeData $persistData -Force -ErrorAction SilentlyContinue",
-            "    }",
-            "} else {",
-            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
+            "$appdata = \"$env:APPDATA\\KOOK\"",
+            "if (Test-Path $appdata) {",
+            "    $item = Get-Item $appdata",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
             "}"
         ]
     },

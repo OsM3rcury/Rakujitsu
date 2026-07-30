@@ -1,37 +1,36 @@
 {
-    "homepage": "https://www.alipan.com/",
-    "description": "阿里云盘桌面客户端 - 备份无忧 整理有序",
     "version": "6.9.3.1875",
+    "description": "阿里云盘桌面客户端 - 备份无忧 整理有序",
+    "homepage": "https://www.alipan.com/",
     "license": {
         "identifier": "EULA"
     },
     "url": "https://sw.pcmgr.qq.com/ca24e11bd34b96b0dc96fbf5a3c98295/6a6b63e8/spcmgr/download/aDrive-6.9.3.exe#/dl.7z",
     "hash": "3ccbdfa920528bd0295c1197a84bcd552cc1cfe2bf2ad722ace7d5dd93bdb281",
-    "innosetup": true,
-    "installer": {
-        "script": [
-            "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -Type Directory -Force | Out-Null }",
-            "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
-            "$runtimePersist = \"$persist_dir\\appdata\"",
-            "if (Test-Path $runtimePersist) {",
-            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
-            "    New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
-            "} else {",
-            "    if (Test-Path $runtimeAppdata) {",
-            "        Move-Item $runtimeAppdata $runtimePersist -Force",
-            "        New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
-            "    }",
-            "}"
-        ]
-    },
+    "pre_install": [
+        "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
+        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "}",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
+    ],
+    "persist": [],
+    "post_install": [
+        "$appdata = \"$env:APPDATA\\aDrive\"",
+        "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $appdata) {",
+        "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+        "        Move-Item \"$appdata\\*\" $persist_dir -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item $appdata -Force -Recurse",
+        "    } else { Remove-Item $appdata -Force }",
+        "}",
+        "New-Item -ItemType Junction -Path $appdata -Target $persist_dir | Out-Null"
+    ],
     "uninstaller": {
         "script": [
-            "$runtimeAppdata = \"$env:APPDATA\\aDrive\"",
-            "$runtimePersist = \"$persist_dir\\appdata\"",
-            "if (!(Test-Path $runtimePersist)) {",
-            "    Move-Item $runtimeAppdata $runtimePersist -Force",
-            "} else {",
-            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
+            "$appdata = \"$env:APPDATA\\aDrive\"",
+            "if (Test-Path $appdata) {",
+            "    $item = Get-Item $appdata",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
             "}"
         ]
     },

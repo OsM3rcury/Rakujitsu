@@ -8,31 +8,32 @@
     },
     "url": "https://sw.pcmgr.qq.com/ad9722b655daea5118603895f8a6ca9a/6a6b67d0/spcmgr/download/NeteaseCloudMusic_Music_official_3.1.36.205322_64.exe#/dl.7z",
     "hash": "1985907e6649a5e44f5cdd45e8ce9f3154347c9caa70d57b81a69972087e134a",
-    "installer": {
-        "script": [
-            "Get-ChildItem \"$dir\\redist_packages\" | Move-Item -Destination \"$dir\" -Force",
-            "$runtimeAppdata = \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
-            "$runtimePersist = \"$persist_dir\\appdata\"",
-            "if (Test-Path $runtimePersist) {",
-            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
-            "    New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
-            "} else {",
-            "    if (Test-Path $runtimeAppdata) {",
-            "        Move-Item $runtimeAppdata $runtimePersist -Force",
-            "        New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",
-            "    }",
-            "}"
-        ]
-    },
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\redist_packages\" -Force -Recurse",
+    "pre_install": [
+        "if (Test-Path \"$dir\\redist_packages\") {",
+        "    Get-ChildItem \"$dir\\redist_packages\\*\" | Move-Item -Destination \"$dir\" -Force",
+        "}",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\redist_packages\" -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": [],
+    "post_install": [
+        "$appdata_parent = \"$env:LOCALAPPDATA\\Netease\"",
+        "$appdata = \"$appdata_parent\\CloudMusic\"",
+        "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
+        "if (!(Test-Path $appdata_parent)) { New-Item $appdata_parent -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $appdata) {",
+        "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+        "        Move-Item \"$appdata\\*\" $persist_dir -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item $appdata -Force -Recurse",
+        "    } else { Remove-Item $appdata -Force }",
+        "}",
+        "New-Item -ItemType Junction -Path $appdata -Target $persist_dir | Out-Null"
+    ],
     "uninstaller": {
         "script": [
-            "$runtimeAppdata = \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
-            "$runtimePersist = \"$persist_dir\\NeteaseMusic\\appdata\"",
-            "if (!(Test-Path $runtimePersist)) {",
-            "    Move-Item $runtimeAppdata $runtimePersist -Force -ErrorAction SilentlyContinue",
-            "} else {",
-            "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
+            "$appdata = \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
+            "if (Test-Path $appdata) {",
+            "    $item = Get-Item $appdata",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
             "}"
         ]
     },
