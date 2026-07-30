@@ -6,7 +6,7 @@
     "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe#/dl.7z",
     "hash": "495574324f61f52d5b6b1979946808778f6580f839846061329c36294a50e501",
     "pre_install": [
-        "Get-ChildItem \"$dir\\`$PLUGINSDIR\\app*.7z\" | ForEach-Object { Expand-7zipArchive $_.FullName \"$dir\" }",
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
     ],
     "bin": "Oopz.exe",
@@ -16,6 +16,27 @@
             "Oopz"
         ]
     ],
+    "persist": "userdata",
+    "post_install": [
+        "$appdata = \"$env:AppData\\Oopz\"",
+        "if (!(Test-Path \"$persist_dir\\userdata\")) { New-Item \"$persist_dir\\userdata\" -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $appdata) {",
+        "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+        "        Move-Item \"$appdata\\*\" \"$persist_dir\\userdata\" -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item $appdata -Force -Recurse",
+        "    } else { Remove-Item $appdata -Force }",
+        "}",
+        "New-Item -ItemType Junction -Path $appdata -Target \"$persist_dir\\userdata\" | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "$appdata = \"$env:AppData\\Oopz\"",
+            "if (Test-Path $appdata) {",
+            "    $item = Get-Item $appdata",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
+            "}"
+        ]
+    },
     "checkver": {
         "url": "https://www.oopz.cn/download.html",
         "regex": "releases/([\\d.]+)/Oopz-[\\d.]+.exe"
