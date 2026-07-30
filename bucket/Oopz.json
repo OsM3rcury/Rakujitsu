@@ -1,71 +1,61 @@
 {
     "version": "1.4.3.1",
-    "description": "Oopz 游戏语音社交平台 - AI降噪、高清语音、屏幕共享",
-    "homepage": "https://oopz.cn/",
-    "license": {
-        "identifier": "Proprietary",
-        "url": "https://help.oopz.cn/agreement/service"
-    },
-    "architecture": {
-        "64bit": {
-            "url": "https://downloadcdn.oopz.cn/release/143/oopz_setup_v1.4.3.1.exe#/dl.7z",
-            "hash": "48F65ACFEC57B039059AB53099AA808826D6BAB60EC762A01A8C0D6014B5754B"
-        }
-    },
-    "installer": {
-        "script": [
-            "# Extract NSIS installer - move app files from temp dir",
-            "Get-ChildItem \"$dir\\`$TEMP\\oopz_nsis\\installer\\*\" | Move-Item -Destination \"$dir\" -Force",
-            "# Cleanup NSIS temp files",
-            "@('$PLUGINSDIR', '$TEMP', 'uninstaller') | ForEach-Object {",
-            "    Remove-Item \"$dir\\$_\" -Recurse -Force -ErrorAction SilentlyContinue",
-            "}",
-            "# persist AppData",
-            "$runtimeData = \"$env:APPDATA\\Oopz\"",
-            "$persistData = \"$persist_dir\\appdata\"",
-            "if (Test-Path $persistData) {",
-            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
-            "    New-Item -Type Junction -Path $runtimeData -Target $persistData | Out-Null",
-            "} else {",
-            "    # AppData is created by the app on first run, not during install",
-            "}"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "$runtimeData = \"$env:APPDATA\\Oopz\"",
-            "$persistData = \"$persist_dir\\appdata\"",
-            "if (!(Test-Path $persistData)) {",
-            "    if (Test-Path $runtimeData) {",
-            "        Move-Item $runtimeData $persistData -Force -ErrorAction SilentlyContinue",
-            "    }",
-            "} else {",
-            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
-            "}"
-        ]
-    },
+    "description": "Oopz - 好玩的语音，更有趣的社区",
+    "homepage": "https://www.oopz.cn/",
+    "license": "Proprietary",
+    "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe#/dl.7z",
+    "hash": "495574324f61f52d5b6b1979946808778f6580f839846061329c36294a50e501",
+    "pre_install": [
+        "# 1. 进入 NSIS 内部提取真正的程序包",
+        "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
+        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "} elseif (Test-Path \"$dir\\`$PLUGINSDIR\\app.7z\") {",
+        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app.7z\" \"$dir\"",
+        "}",
+        "# 2. 清理所有 NSIS 残留的外壳文件",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "bin": "Oopz.exe",
     "shortcuts": [
         [
-            "installer.exe",
+            "Oopz.exe",
             "Oopz"
         ]
     ],
-    "checkver": {
+    "persist": "userdata",
+    "post_install": [
+        "$appdata = \"$env:AppData\\Oopz\"",
+        "$persist_data = \"$persist_dir\\userdata\"",
+        "if (!(Test-Path $persist_data)) { New-Item $persist_data -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $appdata) {",
+        "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+        "        # 如果原本已有非链接的数据文件夹，迁移它",
+        "        Move-Item \"$appdata\\*\" $persist_data -Force -ErrorAction SilentlyContinue",
+        "        Remove-Item $appdata -Force -Recurse",
+        "    } else {",
+        "        # 如果已经是链接，先删掉旧链接准备重新指向",
+        "        Remove-Item $appdata -Force",
+        "    }",
+        "}",
+        "# 创建软链接，将 AppData 指向 Scoop 的 persist 目录",
+        "New-Item -ItemType Junction -Path $appdata -Target $persist_data | Out-Null"
+    ],
+    "uninstaller": {
         "script": [
-            "$req = [System.Net.WebRequest]::Create('https://www.oopz.cn/download/xx')",
-            "$req.AllowAutoRedirect = $false",
-            "$resp = $req.GetResponse()",
-            "$resp.Headers['Location']",
-            "$resp.Close()"
-        ],
-        "regex": "/([\\d]+)/oopz_([\\w]+)_v([\\d\\.]+)\\.exe",
-        "replace": "$3"
+            "$appdata = \"$env:AppData\\Oopz\"",
+            "if (Test-Path $appdata) {",
+            "    $item = Get-Item $appdata",
+            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
+            "        Remove-Item $appdata -Force",
+            "    }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.oopz.cn/download.html",
+        "regex": "releases/([\\d.]+)/Oopz-[\\d.]+.exe"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://downloadcdn.oopz.cn/release/$match1/oopz_$match2_v$match3.exe#/dl.7z"
-            }
-        }
+        "url": "https://guanyu-static.oopz.cn/oopz-client/releases/$version/Oopz-$version.exe#/dl.7z"
     }
 }
