@@ -15,7 +15,7 @@
     },
     "installer": {
         "script": [
-            "$persistContDir = \"$persistRoot\\ClashVergeRev\\.config\"",
+            "$persistContDir = \"$persist_dir\\.config\"",
             "$runtimeContDir = \"$dir\\.config\"",
             "",
             "if (Test-Path $runtimeContDir) {",
@@ -32,7 +32,7 @@
     },
     "uninstaller": {
         "script": [
-            "$persistContDir = \"$persistRoot\\ClashVergeRev\\.config\"",
+            "$persistContDir = \"$persist_dir\\.config\"",
             "$runtimeContDir = \"$dir\\.config\"",
             "",
             "if (!(Test-Path $persistContDir)) {",

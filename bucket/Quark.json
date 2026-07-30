@@ -1,0 +1,64 @@
+{
+    "homepage": "https://www.quark.cn/",
+    "description": "夸克浏览器 - AI旗舰应用，极速、智能、高效的搜索浏览体验",
+    "version": "7.0.5.931",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://terms.alicdn.com/legal-agreement/terms/c_end_product_protocol/20230727183841535/20230727183841535.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://umcdn.quark.cn/download/37212/quarkpc/pcquark@homepage_oficial/QuarkPC_V7.0.5.931_pc_pf30002_(zh-cn)_release_(Build3106104-1000-x64).exe",
+            "hash": "D8A2B6B2348A478A875DFACD89A37E71BB23612D1BEDF9EF722D7CEEFC01B6BD"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "Move-Item \"$dir\\{code_GetAppExeDestName}\" \"$dir\\quark.exe\" -Force",
+            "Move-Item \"$dir\\{code_GetAppProxyExeDestName}\" \"$dir\\quark_proxy.exe\" -Force",
+            "$target = \"$env:LOCALAPPDATA\\Quark\"",
+            "$persistTarget = \"$persist_dir\\LocalAppData\"",
+            "if (Test-Path $persistTarget) {",
+            "    New-Item -ItemType Junction -Path $target -Target $persistTarget -Force | Out-Null",
+            "} else {",
+            "    if (Test-Path $target) {",
+            "        Move-Item $target $persistTarget -Force",
+            "        New-Item -ItemType Junction -Path $target -Target $persistTarget -Force | Out-Null",
+            "    } else {",
+            "        New-Item -ItemType Directory -Path $persistTarget -Force | Out-Null",
+            "        New-Item -ItemType Junction -Path $target -Target $persistTarget -Force | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "bin": "quark.exe",
+    "shortcuts": [
+        [
+            "quark.exe",
+            "夸克"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$entry = 'https://download.quark.cn/download/quarkpc?platform=pc&ch=pcquark@homepage_oficial'",
+            "$req = [System.Net.WebRequest]::Create($entry)",
+            "$req.AllowAutoRedirect = $false",
+            "$resp = $req.GetResponse()",
+            "$resolved = $resp.Headers['Location']",
+            "$resp.Close()",
+            "return $resolved"
+        ],
+        "regex": "QuarkPC_V([\\d.]+)_pc_pf30002_\\(zh-cn\\)_"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.quark.cn/download/quarkpc?platform=pc&ch=pcquark@homepage_oficial",
+                "hash": {
+                    "mode": "download"
+                }
+            }
+        }
+    }
+}

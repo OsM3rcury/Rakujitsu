@@ -14,11 +14,9 @@
     },
     "installer": {
         "script": [
-            "$persistRoot = \"$persist_dir\\Oopz\"",
-            "if (!(Test-Path $persistRoot)) { New-Item $persistRoot -Type Directory -Force | Out-Null }",
             "# persist AppData",
             "$runtimeData = \"$env:APPDATA\\Oopz\"",
-            "$persistData = \"$persistRoot\\appdata\"",
+            "$persistData = \"$persist_dir\\appdata\"",
             "if (Test-Path $persistData) {",
             "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
             "    New-Item -Type Junction -Path $runtimeData -Target $persistData | Out-Null",
@@ -29,9 +27,8 @@
     },
     "uninstaller": {
         "script": [
-            "$persistRoot = \"$persist_dir\\Oopz\"",
             "$runtimeData = \"$env:APPDATA\\Oopz\"",
-            "$persistData = \"$persistRoot\\appdata\"",
+            "$persistData = \"$persist_dir\\appdata\"",
             "if (!(Test-Path $persistData)) {",
             "    if (Test-Path $runtimeData) {",
             "        Move-Item $runtimeData $persistData -Force -ErrorAction SilentlyContinue",

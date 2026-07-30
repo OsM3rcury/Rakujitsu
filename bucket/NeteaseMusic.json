@@ -19,10 +19,8 @@
     "installer": {
         "script": [
             "Get-ChildItem \"$dir\\redist_packages\" | Move-Item -Destination \"$dir\" -Force",
-            "$persistRoot = \"$persist_dir\\NeteaseMusic\"",
-            "if (!(Test-Path $persistRoot)) { New-Item $persistRoot -Type Directory -Force | Out-Null }",
             "$runtimeAppdata = \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
-            "$runtimePersist = \"$persistRoot\\appdata\"",
+            "$runtimePersist = \"$persist_dir\\appdata\"",
             "if (Test-Path $runtimePersist) {",
             "    Remove-Item $runtimeAppdata -Force -Recurse -ErrorAction SilentlyContinue",
             "    New-Item -Type Junction -Path $runtimeAppdata -Target $runtimePersist | Out-Null",

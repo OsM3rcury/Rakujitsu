@@ -11,6 +11,28 @@
             "Expand-7zipArchive -Path \"$dir\\KOOK-*-full.nupkg\" -ExtractDir \"lib\\net45\" -Removal",
             "@('$PLUGINSDIR', '$1') | ForEach-Object {",
             "    Remove-Item \"$dir\\$_\" -Recurse -Force",
+            "}",
+            "# persist AppData",
+            "$runtimeData = \"$env:APPDATA\\KOOK\"",
+            "$persistData = \"$persist_dir\\appdata\"",
+            "if (Test-Path $persistData) {",
+            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeData -Target $persistData | Out-Null",
+            "} else {",
+            "    # AppData is created by the app on first run",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeData = \"$env:APPDATA\\KOOK\"",
+            "$persistData = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $persistData)) {",
+            "    if (Test-Path $runtimeData) {",
+            "        Move-Item $runtimeData $persistData -Force -ErrorAction SilentlyContinue",
+            "    }",
+            "} else {",
+            "    Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue",
             "}"
         ]
     },
