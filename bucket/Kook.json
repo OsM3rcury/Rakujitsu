@@ -3,7 +3,7 @@
     "description": "KOOK, formerly KaiHeiLa, is a voice communication tool that is known as the Chinese Discord",
     "homepage": "https://www.kookapp.cn/",
     "license": "Proprietary",
-    "url": "https://dl.kookapp.cn/assets/release/html_pc/kook_3037/Kook_PC_Setup_v0.109.0.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe#/dl.7z",
+    "url": "https://dl.kookapp.cn/assets/release/html_pc/kook_3037/Kook_PC_Setup_v0.109.0.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe?auth_key=1785427639-4715819a865a19294f6d0887ad8c59c0-13lm0mtz0-4bb20964a539597b1684912656ad5048#/dl.7z",
     "hash": "1cc9d34efb23327752f7b55c3b47c89473ff80bfcaba265661dfa841517e0ebb",
     "installer": {
         "script": [
@@ -44,9 +44,9 @@
     ],
     "checkver": {
         "url": "https://www.kookapp.cn/api/v2/updates/latest-version?platform=windows",
-        "regex": "https://(?<path>.*?)/Kook_PC_Setup_v([\\d.]+)_(?<base64>.*?).exe"
+        "regex": "\"url\":\"(?<url>https://dl\\.kookapp\\.cn/assets/release/html_pc/kook_\\d+/Kook_PC_Setup_v([\\d.]+)_.+?)\""
     },
     "autoupdate": {
-        "url": "https://$matchPath/Kook_PC_Setup_v$version_$matchBase64.exe#/dl.7z"
+        "url": "$matchUrl#/dl.7z"
     }
 }
