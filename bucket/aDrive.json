@@ -1,16 +1,12 @@
 {
     "homepage": "https://www.alipan.com/",
     "description": "阿里云盘桌面客户端 - 备份无忧 整理有序",
-    "version": "6.9.1",
+    "version": "6.9.3.1875",
     "license": {
         "identifier": "EULA"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-6.9.1.exe",
-            "hash": "cc40289de6c35821214c816b8a1101c3ada822f05c7da3b770ae432067eea76a"
-        }
-    },
+    "url": "https://sw.pcmgr.qq.com/ca24e11bd34b96b0dc96fbf5a3c98295/6a6b63e8/spcmgr/download/aDrive-6.9.3.exe#/dl.7z",
+    "hash": "3ccbdfa920528bd0295c1197a84bcd552cc1cfe2bf2ad722ace7d5dd93bdb281",
     "innosetup": true,
     "installer": {
         "script": [
@@ -47,14 +43,13 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.alipan.com/",
-        "regex": "aDrive-([\\d.]+)\\.exe"
+        "script": [
+            "$resp = Invoke-WebRequest -UseBasicParsing -Uri 'https://luban.m.qq.com/api/public/software-manager/softwareProxy' -Body 'cmdid=3318&jprxReq%5Breq%5D%5Bsoft_id_list%5D%5B%5D=28156' -Method 'POST'",
+            "Write-Output $resp.Content"
+        ],
+        "regex": "\"ver_name\":\"([\\d.]+)\".+\"download_https_url\":\"https://(?<url>.+exe)\""
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-$version.exe"
-            }
-        }
+        "url": "https://$matchUrl#/dl.7z"
     }
 }
