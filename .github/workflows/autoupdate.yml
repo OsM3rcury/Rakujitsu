@@ -1,31 +1,24 @@
-name: Auto Update
+name: Excavator
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
   workflow_dispatch:
+  schedule:
+    # run every 4 hours
+    - cron: '20 */4 * * *'
+
+permissions:
+  contents: write
 
 jobs:
-  autoupdate:
+  excavate:
+    name: Excavate
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Install Scoop
-        run: |
-          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-          irm get.scoop.sh | iex
-          echo "$env:USERPROFILE\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "SCOOP=$env:USERPROFILE\scoop" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-      - name: Run checkver
-        run: |
-          . "$env:SCOOP\apps\scoop\current\bin\checkver.ps1" -Dir "$env:GITHUB_WORKSPACE\bucket" -Update
-
-      - name: Commit and push
-        run: |
-          cd $env:GITHUB_WORKSPACE
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add bucket/
-          git diff --staged --quiet || (git commit -m "autoupdate: bump versions" && git push)
+    - name: Checkout
+      uses: actions/checkout@v6
+    - name: Excavate
+      uses: ScoopInstaller/GithubActions@main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SKIP_UPDATED: '1'
+        SCOOP_BRANCH: develop
