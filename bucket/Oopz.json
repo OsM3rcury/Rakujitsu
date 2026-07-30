@@ -3,23 +3,12 @@
     "description": "Oopz - 好玩的语音，更有趣的社区",
     "homepage": "https://www.oopz.cn/",
     "license": "Proprietary",
-    "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe",
+    "url": "https://guanyu-static.oopz.cn/oopz-client/releases/1.4.3.1/Oopz-1.4.3.1.exe#/dl.7z",
     "hash": "495574324f61f52d5b6b1979946808778f6580f839846061329c36294a50e501",
     "pre_install": [
-        "# 1. 手动将下载的 EXE 作为压缩包解压（绕过锚点无效问题）",
-        "$exe_file = \"$dir\\Oopz-1.4.3.1.exe\"",
-        "if (Test-Path $exe_file) {",
-        "    & 7z.exe x \"$exe_file\" \"-o$dir\" \"-y\" | Out-Null",
-        "    Remove-Item $exe_file -Force",
-        "}",
-        "# 2. 提取内部真正的程序包",
-        "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
-        "    & 7z.exe x \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"-o$dir\" \"-y\" | Out-Null",
-        "} elseif (Test-Path \"$dir\\`$PLUGINSDIR\\app.7z\") {",
-        "    & 7z.exe x \"$dir\\`$PLUGINSDIR\\app.7z\" \"-o$dir\" \"-y\" | Out-Null",
-        "}",
-        "# 3. 清理残留",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse -ErrorAction SilentlyContinue"
+        "if (!(Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\")) { error \"无法找到嵌套的压缩包，请检查下载是否完整\"; return }",
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
     ],
     "bin": "Oopz.exe",
     "shortcuts": [
@@ -32,22 +21,15 @@
     "post_install": [
         "$appdata = \"$env:AppData\\Oopz\"",
         "$persist_data = \"$persist_dir\\userdata\"",
-        "if (!(Test-Path $persist_data)) { New-Item $persist_data -ItemType Directory -Force | Out-Null }",
-        "if (Test-Path $appdata) {",
-        "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
-        "        Move-Item \"$appdata\\*\" $persist_data -Force -ErrorAction SilentlyContinue",
-        "        Remove-Item $appdata -Force -Recurse",
-        "    } else { Remove-Item $appdata -Force }",
-        "}",
-        "New-Item -ItemType Junction -Path $appdata -Target $persist_data | Out-Null"
+        "if (!(Test-Path $appdata)) {",
+        "    if (!(Test-Path $persist_data)) { New-Item $persist_data -ItemType Directory -Force | Out-Null }",
+        "    New-Item -ItemType Junction -Path $appdata -Target $persist_data | Out-Null",
+        "}"
     ],
     "uninstaller": {
         "script": [
             "$appdata = \"$env:AppData\\Oopz\"",
-            "if (Test-Path $appdata) {",
-            "    $item = Get-Item $appdata",
-            "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
-            "}"
+            "if (Test-Path $appdata) { Get-Item $appdata | Remove-Item -Force -Recurse }"
         ]
     },
     "checkver": {
@@ -55,6 +37,6 @@
         "regex": "releases/([\\d.]+)/Oopz-[\\d.]+.exe"
     },
     "autoupdate": {
-        "url": "https://guanyu-static.oopz.cn/oopz-client/releases/$version/Oopz-$version.exe"
+        "url": "https://guanyu-static.oopz.cn/oopz-client/releases/$version/Oopz-$version.exe#/dl.7z"
     }
 }
