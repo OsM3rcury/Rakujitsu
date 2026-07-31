@@ -1,7 +1,7 @@
 {
-    "homepage": "https://www.quark.cn/",
-    "description": "夸克浏览器 - AI旗舰应用，极速、智能、高效的搜索浏览体验",
     "version": "7.0.5.931",
+    "description": "夸克浏览器 - AI旗舰应用，极速、智能、高效的搜索浏览体验",
+    "homepage": "https://www.quark.cn/",
     "license": {
         "identifier": "Proprietary",
         "url": "https://terms.alicdn.com/legal-agreement/terms/c_end_product_protocol/20230727183841535/20230727183841535.html"
@@ -9,11 +9,17 @@
     "architecture": {
         "64bit": {
             "url": "https://umcdn.quark.cn/download/37212/quarkpc/pcquark@homepage_oficial/QuarkPC_V7.0.5.931_pc_pf30002_(zh-cn)_release_(Build3106104-1000-x64).exe",
-            "hash": "D8A2B6B2348A478A875DFACD89A37E71BB23612D1BEDF9EF722D7CEEFC01B6BD"
+            "hash": "d8a2b6b2348a478a875dfacd89a37e71bb23612d1bedf9ef722d7ceefc01b6bd"
         }
     },
     "innosetup": true,
-    "persist": [],
+    "bin": "quark.exe",
+    "shortcuts": [
+        [
+            "quark.exe",
+            "夸克"
+        ]
+    ],
     "post_install": [
         "Move-Item \"$dir\\{code_GetAppExeDestName}\" \"$dir\\quark.exe\" -Force",
         "Move-Item \"$dir\\{code_GetAppProxyExeDestName}\" \"$dir\\quark_proxy.exe\" -Force",
@@ -38,13 +44,6 @@
             "}"
         ]
     },
-    "bin": "quark.exe",
-    "shortcuts": [
-        [
-            "quark.exe",
-            "夸克"
-        ]
-    ],
     "checkver": {
         "script": [
             "$entry = 'https://download.quark.cn/download/quarkpc?platform=pc&ch=pcquark@homepage_oficial'",

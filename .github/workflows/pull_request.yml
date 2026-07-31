@@ -1,0 +1,19 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    types: [ opened ]
+  workflow_dispatch:
+
+jobs:
+  pullRequestHandler:
+    name: Pull Request Validator
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+    - name: Pull Request Validator
+      uses: ScoopInstaller/GithubActions@main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        THROW_ERROR: '1'

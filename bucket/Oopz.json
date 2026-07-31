@@ -9,7 +9,7 @@
         "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
         "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
         "}",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse -ErrorAction SilentlyContinue"
     ],
     "bin": "Oopz.exe",
     "shortcuts": [
@@ -18,7 +18,6 @@
             "Oopz"
         ]
     ],
-    "persist": [],
     "post_install": [
         "$appdata = \"$env:AppData\\Oopz\"",
         "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
