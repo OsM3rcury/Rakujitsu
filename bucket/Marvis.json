@@ -4,14 +4,20 @@
     "homepage": "https://marvis.qq.com/",
     "license": "Proprietary",
     "url": "https://marvis.qq.com/download/exe#/dl.7z",
-    "hash": "E57694CA6EB2DF00506337F3DB6C73817544E6E3ADEB8184FBB4C62A5B6B1080",
+    "hash": "e57694ca6eb2df00506337f3db6c73817544e6e3adeb8184fbb4c62a5b6b1080",
     "pre_install": [
         "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
         "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
         "}",
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\", \"$dir\\*.exe\" -Force -Recurse -ErrorAction SilentlyContinue"
     ],
-    "persist": [],
+    "bin": "Marvis.exe",
+    "shortcuts": [
+        [
+            "Marvis.exe",
+            "Marvis"
+        ]
+    ],
     "post_install": [
         "$appdata = \"$env:LOCALAPPDATA\\Marvis\"",
         "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
@@ -32,13 +38,6 @@
             "}"
         ]
     },
-    "bin": "Marvis.exe",
-    "shortcuts": [
-        [
-            "Marvis.exe",
-            "Marvis"
-        ]
-    ],
     "checkver": {
         "script": [
             "$req = [System.Net.WebRequest]::Create('https://marvis.qq.com/download/exe')",

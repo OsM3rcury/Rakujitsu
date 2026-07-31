@@ -14,7 +14,12 @@
         "}",
         "Remove-Item \"$dir\\`$1\", \"$dir\\`$PLUGINSDIR\" -Force -Recurse -ErrorAction SilentlyContinue"
     ],
-    "persist": [],
+    "shortcuts": [
+        [
+            "KOOK.exe",
+            "KOOK"
+        ]
+    ],
     "post_install": [
         "$appdata = \"$env:APPDATA\\KOOK\"",
         "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
@@ -35,12 +40,6 @@
             "}"
         ]
     },
-    "shortcuts": [
-        [
-            "KOOK.exe",
-            "KOOK"
-        ]
-    ],
     "checkver": {
         "url": "https://www.kookapp.cn/api/v2/updates/latest-version?platform=windows",
         "regex": "\"url\":\"(?<url>https://dl\\.kookapp\\.cn/assets/release/html_pc/kook_\\d+/Kook_PC_Setup_v([\\d.]+)_.+?)\""

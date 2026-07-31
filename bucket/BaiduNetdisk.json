@@ -12,15 +12,17 @@
             "hash": "e4f727fa845172a2840254079b6d51f034b5074c2f516de2c0ab4011d27e0811"
         }
     },
-    "persist": [
-        "users",
-        "guanjia",
-        "kernel"
+    "bin": "BaiduNetdisk.exe",
+    "shortcuts": [
+        [
+            "BaiduNetdisk.exe",
+            "百度网盘"
+        ]
     ],
+    "persist": "users",
     "post_install": [
         "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$TEMP\" -Force -Recurse -ErrorAction SilentlyContinue",
         "$paths = @{",
-        "    'users'   = \"$dir\\users\"",
         "    'guanjia' = \"$env:APPDATA\\BaiduYunGuanjia\"",
         "    'kernel'  = \"$env:APPDATA\\BaiduYunKernel\"",
         "}",
@@ -39,7 +41,7 @@
     "uninstaller": {
         "script": [
             "if (Get-Process -Name YunDetectService -ErrorAction SilentlyContinue) { Stop-Process -Name YunDetectService -Force }",
-            "$paths = @(\"$dir\\users\", \"$env:APPDATA\\BaiduYunGuanjia\", \"$env:APPDATA\\BaiduYunKernel\")",
+            "$paths = @(\"$env:APPDATA\\BaiduYunGuanjia\", \"$env:APPDATA\\BaiduYunKernel\")",
             "$paths | ForEach-Object {",
             "    if (Test-Path $_) {",
             "        $item = Get-Item $_",
@@ -48,13 +50,6 @@
             "}"
         ]
     },
-    "bin": "BaiduNetdisk.exe",
-    "shortcuts": [
-        [
-            "BaiduNetdisk.exe",
-            "百度网盘"
-        ]
-    ],
     "checkver": {
         "url": "https://pan.baidu.com/disk/cmsdata?do=client",
         "jsonpath": "$.guanjia.url",
