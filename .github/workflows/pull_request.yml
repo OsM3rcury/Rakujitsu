@@ -1,19 +1,20 @@
 name: Pull Requests
-
 on:
   pull_request:
     types: [ opened ]
-  workflow_dispatch:
-
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   pullRequestHandler:
-    name: Pull Request Validator
+    name: PullRequestHandler
     runs-on: windows-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
-    - name: Pull Request Validator
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - name: PullRequestHandler
       uses: ScoopInstaller/GithubActions@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SCOOP_BRANCH: develop
         THROW_ERROR: '1'
