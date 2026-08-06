@@ -1,13 +1,13 @@
 {
-    "version": "3.1.36.205322",
+    "version": "3.1.37.205354",
     "description": "The official NetEase Cloud Music client.",
     "homepage": "https://music.163.com/",
     "license": {
         "identifier": "EULA",
         "url": "https://music.163.com/html/web2/service.html"
     },
-    "url": "https://sw.pcmgr.qq.com/ad9722b655daea5118603895f8a6ca9a/6a6b67d0/spcmgr/download/NeteaseCloudMusic_Music_official_3.1.36.205322_64.exe#/dl.7z",
-    "hash": "1985907e6649a5e44f5cdd45e8ce9f3154347c9caa70d57b81a69972087e134a",
+    "url": "https://sw.pcmgr.qq.com/d6bc2001e631131d8e51437fb60568d8/6a74688a/spcmgr/download/NeteaseCloudMusic_Music_official_3.1.37.205354_64.exe#/dl.7z",
+    "hash": "6e101996c44e2edeb132ac49e1a1746ae1cceb287f6687cb53bd04a2eec8516a",
     "pre_install": [
         "if (Test-Path \"$dir\\redist_packages\") {",
         "    Get-ChildItem \"$dir\\redist_packages\\*\" | Move-Item -Destination \"$dir\" -Force",
