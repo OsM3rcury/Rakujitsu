@@ -1,13 +1,13 @@
 {
-    "version": "3.1.37.205354",
+    "version": "3.1.30.205130",
     "description": "The official NetEase Cloud Music client.",
     "homepage": "https://music.163.com/",
     "license": {
         "identifier": "EULA",
         "url": "https://music.163.com/html/web2/service.html"
     },
-    "url": "https://sw.pcmgr.qq.com/d6bc2001e631131d8e51437fb60568d8/6a74688a/spcmgr/download/NeteaseCloudMusic_Music_official_3.1.37.205354_64.exe#/dl.7z",
-    "hash": "6e101996c44e2edeb132ac49e1a1746ae1cceb287f6687cb53bd04a2eec8516a",
+    "url": "https://d8.music.126.net/dmusic2/NeteaseCloudMusic_Music_official_3.1.30.205130_64.exe#/dl.7z",
+    "hash": "9ae0f1fabc4286bc4121176d864b871e85c7b5bc24b40a41883dd19ecbe6aba5",
     "pre_install": [
         "if (Test-Path \"$dir\\redist_packages\") {",
         "    Get-ChildItem \"$dir\\redist_packages\\*\" | Move-Item -Destination \"$dir\" -Force",
@@ -44,13 +44,11 @@
         ]
     },
     "checkver": {
-        "script": [
-            "$resp = Invoke-WebRequest -UseBasicParsing -Uri 'https://luban.m.qq.com/api/public/software-manager/softwareProxy' -Body 'cmdid=3318&jprxReq%5Breq%5D%5Bsoft_id_list%5D%5B%5D=11167' -Method 'POST'",
-            "Write-Output $resp.Content"
-        ],
-        "regex": "\"ver_name\":\"([\\d.]+)\".+\"download_https_url\":\"https://(?<url>.+exe)\""
+        "url": "https://music.163.com/api/appcustomconfig/get",
+        "jsonpath": "$.data.web-new-download.pc64.downloadUrl",
+        "regex": "NeteaseCloudMusic_Music_official_([\\d.]+)_64.exe"
     },
     "autoupdate": {
-        "url": "https://$matchUrl#/dl.7z"
+        "url": "https://d8.music.126.net/dmusic2/NeteaseCloudMusic_Music_official_$version_64.exe#/dl.7z"
     }
 }
