@@ -13,6 +13,13 @@
         }
     },
     "innosetup": true,
+    "pre_install": [
+        "Get-ChildItem \"$dir\\app\" -Directory | Where-Object { $_.Name -match '^\\d' } | ForEach-Object { Get-ChildItem $_.FullName | Move-Item -Destination \"$dir\" -Force }",
+        "Get-ChildItem \"$dir\\app\" -File -Filter '*GetAppExeDestName*' | Move-Item -Destination \"$dir\\quark.exe\" -Force",
+        "Get-ChildItem \"$dir\\app\" -File -Filter '*GetAppProxyExeDestName*' | Move-Item -Destination \"$dir\\quark_proxy.exe\" -Force",
+        "Move-Item \"$dir\\app\\components\", \"$dir\\app\\results.txt\" -Destination \"$dir\" -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\app\" -Recurse -Force -ErrorAction SilentlyContinue"
+    ],
     "bin": "quark.exe",
     "shortcuts": [
         [
@@ -21,8 +28,6 @@
         ]
     ],
     "post_install": [
-        "Move-Item \"$dir\\{code_GetAppExeDestName}\" \"$dir\\quark.exe\" -Force",
-        "Move-Item \"$dir\\{code_GetAppProxyExeDestName}\" \"$dir\\quark_proxy.exe\" -Force",
         "$target = \"$env:LOCALAPPDATA\\Quark\"",
         "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
         "if (Test-Path $target) {",
@@ -31,9 +36,7 @@
         "        Remove-Item $target -Force -Recurse",
         "    } else { Remove-Item $target -Force }",
         "}",
-        "New-Item -ItemType Junction -Path $target -Target $persist_dir | Out-Null",
-        "$updateExe = \"$dir\\QuarkUpdate.exe\"",
-        "if (!(Test-Path $updateExe)) { New-Item -ItemType Directory -Path $updateExe -Force | Out-Null }"
+        "New-Item -ItemType Junction -Path $target -Target $persist_dir | Out-Null"
     ],
     "uninstaller": {
         "script": [
