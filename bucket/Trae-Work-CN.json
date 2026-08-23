@@ -1,20 +1,21 @@
 {
-    "version": "2.3.62834",
+    "version": "2.3.73734",
     "description": "TRAE Work, an AI-native workspace with Work and Code dual modes, available as web, desktop, and mobile",
     "homepage": "https://www.trae.cn/work",
     "license": "Proprietary",
-    "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/2.3.62834/win32/TRAE_Work_CN-Setup-x64.exe",
-    "hash": "f15b4430d74195156f37de03164c6f27e14306024f1e0962aa9dab2084bce8e1",
+    "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/2.3.73734/win32/TraeWork_CN-Setup-x64.exe",
+    "hash": "b515a7683c6975e36ea8f4e7a081d95c750b96fe76a3f3a21eec96b5cfa876f5",
     "innosetup": true,
-    "bin": "Trae CN.exe",
+    "extract_dir": "{code_GetDestDir}",
+    "bin": "bin\\trae-solo-cn.cmd",
     "shortcuts": [
         [
-            "Trae CN.exe",
+            "TRAE SOLO CN.exe",
             "Trae Work"
         ]
     ],
     "post_install": [
-        "$appdata = \"$env:APPDATA\\Trae CN\"",
+        "$appdata = \"$env:APPDATA\\TRAE SOLO CN\"",
         "if (!(Test-Path $persist_dir)) { New-Item $persist_dir -ItemType Directory -Force | Out-Null }",
         "if (Test-Path $appdata) {",
         "    if (-not (Get-Item $appdata).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) {",
@@ -26,7 +27,7 @@
     ],
     "uninstaller": {
         "script": [
-            "$appdata = \"$env:APPDATA\\Trae CN\"",
+            "$appdata = \"$env:APPDATA\\TRAE SOLO CN\"",
             "if (Test-Path $appdata) {",
             "    $item = Get-Item $appdata",
             "    if ($item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)) { Remove-Item $appdata -Force }",
@@ -35,9 +36,10 @@
     },
     "checkver": {
         "url": "https://api.trae.cn/icube/api/v1/native/version/trae/cn/latest",
-        "jsonpath": "$.data.solo.win32.version"
+        "jsonpath": "$.data.solo.win32.download[0].x64",
+        "regex": "releases/stable/([\\d.]+)/win32/TraeWork"
     },
     "autoupdate": {
-        "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/$version/win32/TRAE_Work_CN-Setup-x64.exe"
+        "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/$version/win32/TraeWork_CN-Setup-x64.exe"
     }
 }
