@@ -1,10 +1,10 @@
 {
-    "version": "2.3.79029",
+    "version": "2.3.79533",
     "description": "TRAE Work, an AI-native workspace with Work and Code dual modes, available as web, desktop, and mobile",
     "homepage": "https://www.trae.cn/work",
     "license": "Proprietary",
-    "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/2.3.79029/win32/TraeWork_CN-Setup-x64.exe",
-    "hash": "e2d32e035edbd18e23a3ec6c2af236fe769e77b5277d0ea1da75908dc046eaf0",
+    "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/2.3.79533/win32/TraeWork_CN-Setup-x64.exe",
+    "hash": "49283cb8923e236c12dc065884f4a1f1b2e97102b82013388a191ace62ec09b9",
     "innosetup": true,
     "extract_dir": "{code_GetDestDir}",
     "bin": "bin\\trae-solo-cn.cmd",
