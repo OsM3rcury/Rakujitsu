@@ -5,7 +5,7 @@
     "license": {
         "identifier": "EULA"
     },
-    "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-6.9.3.exe#/dl.7z",
+    "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-6.9.3.exe?ref=sourceforge.net#/dl.7z",
     "hash": "3ccbdfa920528bd0295c1197a84bcd552cc1cfe2bf2ad722ace7d5dd93bdb281",
     "pre_install": [
         "if (Test-Path \"$dir\\`$PLUGINSDIR\\app-64.7z\") {",
@@ -48,6 +48,6 @@
         "regex": "\"ver_name\":\"(\\d+\\.\\d+\\.\\d+)"
     },
     "autoupdate": {
-        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-$version.exe#/dl.7z"
+        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-$version.exe?ref=sourceforge.net#/dl.7z"
     }
 }
